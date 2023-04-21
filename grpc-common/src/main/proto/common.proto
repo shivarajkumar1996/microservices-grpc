@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package com.microservices.grpc;
+
+option java_multiple_files = true;
+option java_package = "com.microservices.grpc";
+
+service FileStorageService {
+  rpc getFile(File) returns (File) {
+  }
+}
+
+message File {
+  int32 id = 1;
+  string name = 2;
+  string dob = 3;
+  double salary = 4;
+  int32 age = 5;
+}
