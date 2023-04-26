@@ -1,3 +1,5 @@
+file:
+  storageDir: C:\Users\1035033\Desktop\Trainings\PersonalProjects\storageDir
 grpc:
   server:
     port: 9000

@@ -1,7 +1,6 @@
 package com.microservices.grpc.exceptions;
 
 import lombok.Getter;
-import org.springframework.http.HttpStatus;
 import org.springframework.lang.Nullable;
 
 
@@ -9,21 +8,20 @@ import org.springframework.lang.Nullable;
 public enum ErrorCode {
 
     /** Specified resource not found */
-    RESOURCE_NOT_FOUND("ResourceNotFound", "Resource not found", HttpStatus.NOT_FOUND),
-    BAD_ARGUMENT("BadArgument", "Bad argument", HttpStatus.BAD_REQUEST),
-    INVALID_OPERATION("InvalidOperation", "Operation not allowed", HttpStatus.PRECONDITION_FAILED);
+    RESOURCE_NOT_FOUND("ResourceNotFound", "Resource not found"),
+    BAD_ARGUMENT("BadArgument", "Bad argument"),
+    INVALID_OPERATION("InvalidOperation", "Operation not allowed"),
+    FILE_STORAGE_ERROR("FileStorageException", "Error occurred while creating the file storage directory."),
+    FILE_PARSING_ERROR("FileParsingException", "Error occurred while parsing the file.");
 
     private final String shortCode;
 
     private final String message;
 
-    private final HttpStatus httpStatus;
 
-
-    ErrorCode(String shortCode, String message, HttpStatus httpStatus) {
+    ErrorCode(String shortCode, String message) {
         this.shortCode = shortCode;
         this.message = message;
-        this.httpStatus = httpStatus;
     }
 
     public static ErrorCode errorCode(String shortCode) {

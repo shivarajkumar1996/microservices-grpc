@@ -1,17 +1,14 @@
 package com.microservices.grpc.service;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.protobuf.Descriptors;
 import com.microservices.grpc.File;
 import com.microservices.grpc.FileStorageServiceGrpc;
-import com.microservices.grpc.adapter.FileAdapter;
 import com.microservices.grpc.pojo.FilePojo;
 import lombok.extern.log4j.Log4j2;
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.Map;
 
