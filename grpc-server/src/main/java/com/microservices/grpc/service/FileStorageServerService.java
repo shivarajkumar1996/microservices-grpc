@@ -39,7 +39,6 @@ public class FileStorageServerService extends FileStorageServiceGrpc.FileStorage
         FilePojo filePojo = fileUtil.findById(String.valueOf(file.getId()));
         File responseFile = null;
         try {
-            log.info("FilePojo object: {}", filePojo);
             responseFile = converterUtil.convertToProtoBuf(filePojo);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);

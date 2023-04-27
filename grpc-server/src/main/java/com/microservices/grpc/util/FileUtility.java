@@ -2,6 +2,7 @@ package com.microservices.grpc.util;
 
 import com.microservices.grpc.config.FileStorageProperties;
 import com.microservices.grpc.constants.CommonConstants;
+import com.microservices.grpc.exceptions.FileParsingException;
 import com.microservices.grpc.exceptions.FileStorageException;
 import com.microservices.grpc.exceptions.ResourceNotFoundException;
 import com.microservices.grpc.pojo.FilePojo;
@@ -14,6 +15,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -42,7 +46,7 @@ public class FileUtility {
     public FilePojo findById(String id){
 
         File directory = new File(fileStorageDir.toString());
-        FileFilter filter = new FileFilter(id);
+        FileFilter filter = new FileFilter(id + ".");
         String[] fileList = directory.list(filter);
 
         if (fileList == null || fileList.length == 0) {
@@ -52,7 +56,7 @@ public class FileUtility {
         if(fileList.length > 1){
             log.warn("Multiple files detected for the user with id: {}. This is not an expected behaviour. Pick the first occurrence of the file name.", id);
         }
-        String fileName = directory + "\\" + fileList[0];
+        String fileName = Path.of(fileStorageDir.toString(),fileList[0] ).toAbsolutePath().toString();
         FilePojo filePojo = parseFile(id, fileName);
         return filePojo;
 
@@ -65,7 +69,7 @@ public class FileUtility {
             filePojo = parseCSVFile(id, fileName);
         }else{
 
-//            parseXMLFile(fileName);
+            filePojo = parseXMLFile(id, fileName);
         }
         return filePojo;
     }
@@ -91,13 +95,33 @@ public class FileUtility {
         }
         catch (Exception e) {
             e.printStackTrace();
-            throw new FileStorageException("Error occurred while parsing the file.",  Map.of("file", fileName, "message", "Error occurred while parsing the file.", "exception", e.toString()));
+            throw new FileParsingException("Error occurred while parsing the file.",  Map.of("file", fileName, "message", "Error occurred while parsing the file.", "exception", e.toString()));
         }
         return filePojo;
 
     }
 
-//    public FilePojo parseCSVFile(String fileName){
-//
-//    }
+    public FilePojo parseXMLFile(String id, String fileName){
+        File xmlFile = new File(fileName);
+        FilePojo filePojo = null;
+        JAXBContext jaxbContext;
+        try
+        {
+            jaxbContext = JAXBContext.newInstance(FilePojo.class);
+
+            Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+
+            filePojo = (FilePojo) jaxbUnmarshaller.unmarshal(xmlFile);
+
+        }
+        catch (JAXBException e)
+        {
+            e.printStackTrace();
+            throw new FileParsingException("Error occurred while parsing the file.",  Map.of("file", fileName, "message", "Error occurred while parsing the file.", "exception", e.toString()));
+        }
+
+        return filePojo;
+
+
+    }
 }
