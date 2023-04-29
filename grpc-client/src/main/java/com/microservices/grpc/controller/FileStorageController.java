@@ -14,6 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.Map;
 
 @RestController
@@ -29,7 +30,7 @@ public class FileStorageController {
     Gson customGsonBuilder;
 
     @GetMapping("/users/{id}")
-    public Map<Descriptors.FieldDescriptor, Object> get(@PathVariable("id") String id) {
+    public FilePojo get(@PathVariable("id") String id) throws IOException {
         log.info("Received request for file with id: {}", id);
         return fileStorageClientService.getFile(Integer.parseInt(id));
     }

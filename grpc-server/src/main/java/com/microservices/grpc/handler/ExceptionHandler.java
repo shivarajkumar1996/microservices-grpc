@@ -1,4 +1,4 @@
-package com.microservices.grpc.exceptions.handler;
+package com.microservices.grpc.handler;
 
 import com.google.protobuf.Any;
 import com.google.rpc.Code;

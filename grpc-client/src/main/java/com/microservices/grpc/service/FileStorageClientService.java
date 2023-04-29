@@ -6,11 +6,13 @@ import com.microservices.grpc.File;
 import com.microservices.grpc.FileStorageServiceGrpc;
 import com.microservices.grpc.RequestId;
 import com.microservices.grpc.pojo.FilePojo;
+import com.microservices.grpc.utility.Utility;
 import lombok.extern.log4j.Log4j2;
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.Map;
 
 @Service
@@ -23,13 +25,16 @@ public class FileStorageClientService {
     @Autowired
     Gson customGsonBuilder;
 
+    @Autowired
+    Utility convertUtil;
 
-    public Map<Descriptors.FieldDescriptor, Object> getFile(int id) {
+
+    public FilePojo getFile(int id) throws IOException {
         log.info("Processing GET request for id: {}", id);
         RequestId requestId = RequestId.newBuilder().setId(id).build();
         File responseFile = synchronousClient.getFile(requestId);
         log.debug("Got Response id: {}", responseFile.toString());
-        return responseFile.getAllFields();
+        return convertUtil.convertToPojo(responseFile);
 
     }
 
