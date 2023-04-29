@@ -3,6 +3,7 @@ package com.microservices.grpc.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.microservices.grpc.File;
 import com.microservices.grpc.FileStorageServiceGrpc;
+import com.microservices.grpc.RequestId;
 import com.microservices.grpc.pojo.FilePojo;
 import com.microservices.grpc.util.FileUtility;
 import com.microservices.grpc.utility.Utility;
@@ -24,11 +25,9 @@ public class FileStorageServerService extends FileStorageServiceGrpc.FileStorage
     @Autowired
     Utility converterUtil;
 
-
     @Override
-    public void getFile(File file, StreamObserver<File> responseObserver) {
-
-        /*
+    public void getFile(RequestId request, StreamObserver<File> responseObserver) {
+       /*
            - Logic is to store all the files with id as name with its respective extension
            - Whenever a get requests is received by the server, search for the file name with id
            - If it exists, parse the csv/xml into a pojo
@@ -36,7 +35,7 @@ public class FileStorageServerService extends FileStorageServiceGrpc.FileStorage
            - Convert the POJO to protobuf format
            - Send the response
         */
-        FilePojo filePojo = fileUtil.findById(String.valueOf(file.getId()));
+        FilePojo filePojo = fileUtil.findById(String.valueOf(request.getId()));
         File responseFile = null;
         try {
             responseFile = converterUtil.convertToProtoBuf(filePojo);
@@ -46,6 +45,7 @@ public class FileStorageServerService extends FileStorageServiceGrpc.FileStorage
         responseObserver.onNext(responseFile);
         responseObserver.onCompleted();
     }
+
     @Override
     public void createFile(File file, StreamObserver<File> responseObserver) {
         int id = file.getId();

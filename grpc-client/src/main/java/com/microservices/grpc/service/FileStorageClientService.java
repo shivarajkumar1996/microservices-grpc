@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.protobuf.Descriptors;
 import com.microservices.grpc.File;
 import com.microservices.grpc.FileStorageServiceGrpc;
+import com.microservices.grpc.RequestId;
 import com.microservices.grpc.pojo.FilePojo;
 import lombok.extern.log4j.Log4j2;
 import net.devh.boot.grpc.client.inject.GrpcClient;
@@ -24,25 +25,19 @@ public class FileStorageClientService {
 
 
     public Map<Descriptors.FieldDescriptor, Object> getFile(int id) {
-        log.info("Processing request for id: {}", id);
-
-        File fileRequest = File.newBuilder().setAge(27)
-                .setSalary(100000)
-                .setDob("16-07-1996")
-                .setName("Shiva")
-                .setId(id)
-                .build();
-        File responseFile = synchronousClient.getFile(fileRequest);
-        log.info("Got Response id: {}", responseFile.getId());
+        log.info("Processing GET request for id: {}", id);
+        RequestId requestId = RequestId.newBuilder().setId(id).build();
+        File responseFile = synchronousClient.getFile(requestId);
+        log.debug("Got Response id: {}", responseFile.toString());
         return responseFile.getAllFields();
 
     }
 
     public File createFile(String filePojoString) {
         File fileRequest = customGsonBuilder.fromJson(filePojoString, File.class);
-        File responseFile = synchronousClient.getFile(fileRequest);
-        log.info("Got Response : {}", responseFile);
-        return responseFile;
+//        File responseFile = synchronousClient.getFile(fileRequest);
+        log.info("Got Response : {}", fileRequest);
+        return fileRequest;
 
     }
 
@@ -54,9 +49,9 @@ public class FileStorageClientService {
                 .setName("Shiva")
                 .setId(filePojo.getId())
                 .build();
-        File responseFile = synchronousClient.getFile(fileRequest);
-        log.info("Got Response id: {}", responseFile.getId());
-        return responseFile;
+//        File responseFile = synchronousClient.getFile(fileRequest);
+        log.info("Got Response id: {}", fileRequest.getId());
+        return fileRequest;
 
     }
 

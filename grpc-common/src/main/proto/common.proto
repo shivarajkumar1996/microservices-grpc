@@ -6,7 +6,7 @@ option java_multiple_files = true;
 option java_package = "com.microservices.grpc";
 
 service FileStorageService {
-  rpc getFile(File) returns (File) {}
+  rpc getFile(RequestId) returns (File) {}
   rpc createFile(File) returns (File) {}
   rpc updateFile(File) returns (File) {}
 }
@@ -17,6 +17,10 @@ message File {
   string dob = 3;
   double salary = 4;
   int32 age = 5;
+}
+
+message RequestId {
+  int32 id = 1;
 }
 
 message ErrorDetail {
