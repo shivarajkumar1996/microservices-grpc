@@ -5,8 +5,10 @@ import com.google.protobuf.Descriptors;
 import com.microservices.grpc.File;
 import com.microservices.grpc.FileStorageServiceGrpc;
 import com.microservices.grpc.RequestId;
+import com.microservices.grpc.mapper.ServiceExceptionMapper;
 import com.microservices.grpc.pojo.FilePojo;
 import com.microservices.grpc.utility.Utility;
+import io.grpc.StatusRuntimeException;
 import lombok.extern.log4j.Log4j2;
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +34,13 @@ public class FileStorageClientService {
     public FilePojo getFile(int id) throws IOException {
         log.info("Processing GET request for id: {}", id);
         RequestId requestId = RequestId.newBuilder().setId(id).build();
-        File responseFile = synchronousClient.getFile(requestId);
+        File responseFile = null;
+        try {
+             responseFile = synchronousClient.getFile(requestId);
+        } catch (StatusRuntimeException error) {
+            log.info("Error while getting file, reason {} ", error.getMessage());
+            throw ServiceExceptionMapper.map(error);
+        }
         log.debug("Got Response id: {}", responseFile.toString());
         return convertUtil.convertToPojo(responseFile);
 

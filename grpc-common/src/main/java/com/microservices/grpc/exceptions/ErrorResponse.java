@@ -1,36 +1,21 @@
 package com.microservices.grpc.exceptions;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.Map;
+
+import static com.fasterxml.jackson.annotation.JsonTypeInfo.As;
+import static com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 
 @Getter
 @Setter
-@RequiredArgsConstructor
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonTypeInfo(include = As.WRAPPER_OBJECT, use = Id.NAME, visible = true)
+@JsonTypeName("error")
 public class ErrorResponse {
-    private final int status;
-    private final String message;
-    private String stackTrace;
-    private List<ValidationError> errors;
-
-    @Getter
-    @Setter
-    @RequiredArgsConstructor
-    private static class ValidationError {
-        private final String field;
-        private final String message;
-    }
-
-    public void addValidationError(String field, String message){
-        if(Objects.isNull(errors)){
-            errors = new ArrayList<>();
-        }
-        errors.add(new ValidationError(field, message));
-    }
+    private ErrorCode errorCode;
+    private String message;
+    private Map<String, String> details;
 }

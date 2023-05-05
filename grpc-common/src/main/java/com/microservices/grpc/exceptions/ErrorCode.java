@@ -12,8 +12,8 @@ public enum ErrorCode {
     BAD_ARGUMENT("BadArgument", "Bad argument",  HttpStatus.BAD_REQUEST),
     INVALID_OPERATION("InvalidOperation", "Operation not allowed", HttpStatus.PRECONDITION_FAILED),
     FILE_STORAGE_ERROR("FileStorageException", "Error occurred while creating the file storage directory.", HttpStatus.INTERNAL_SERVER_ERROR),
-    FILE_PARSING_ERROR("FileParsingException", "Error occurred while parsing the file.", HttpStatus.INTERNAL_SERVER_ERROR);
-
+    FILE_PARSING_ERROR("FileParsingException", "Error occurred while parsing the file.", HttpStatus.INTERNAL_SERVER_ERROR),
+    INTERNAL_SERVER_ERROR("InternalServerError", "Internal Server Error",  HttpStatus.INTERNAL_SERVER_ERROR);
     private final String shortCode;
 
     private final String message;
