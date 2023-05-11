@@ -9,7 +9,7 @@ public enum ErrorCode {
 
     /** Specified resource not found */
     RESOURCE_NOT_FOUND("ResourceNotFound", "Resource not found",  HttpStatus.NOT_FOUND),
-    BAD_ARGUMENT("BadArgument", "Bad argument",  HttpStatus.BAD_REQUEST),
+    BAD_ARGUMENT("BadArgument", "Invalid arguments passed",  HttpStatus.BAD_REQUEST),
     INVALID_OPERATION("InvalidOperation", "Operation not allowed", HttpStatus.PRECONDITION_FAILED),
     FILE_STORAGE_ERROR("FileStorageException", "Error occurred while creating the file storage directory.", HttpStatus.INTERNAL_SERVER_ERROR),
     FILE_PARSING_ERROR("FileParsingException", "Error occurred while parsing the file.", HttpStatus.INTERNAL_SERVER_ERROR),

@@ -1,5 +1,6 @@
 package com.microservices.grpc.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.gson.Gson;
 import com.google.protobuf.Descriptors;
 import com.microservices.grpc.File;
@@ -46,8 +47,8 @@ public class FileStorageClientService {
 
     }
 
-    public File createFile(String filePojoString) {
-        File fileRequest = customGsonBuilder.fromJson(filePojoString, File.class);
+    public File createFile(FilePojo filePojo) throws JsonProcessingException {
+        File fileRequest = convertUtil.convertToProtoBuf(filePojo);
 //        File responseFile = synchronousClient.getFile(fileRequest);
         log.info("Got Response : {}", fileRequest);
         return fileRequest;
