@@ -3,6 +3,7 @@ package com.microservices.grpc.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.gson.Gson;
 import com.google.protobuf.Descriptors;
+import com.microservices.grpc.CreateOrSaveFileRequest;
 import com.microservices.grpc.File;
 import com.microservices.grpc.FileStorageServiceGrpc;
 import com.microservices.grpc.RequestId;
@@ -39,7 +40,7 @@ public class FileStorageClientService {
         try {
              responseFile = synchronousClient.getFile(requestId);
         } catch (StatusRuntimeException error) {
-            log.info("Error while getting file, reason {} ", error.getMessage());
+            log.error("Error while getting file, reason {} ", error.getMessage());
             throw ServiceExceptionMapper.map(error);
         }
         log.debug("Got Response id: {}", responseFile.toString());
@@ -47,11 +48,18 @@ public class FileStorageClientService {
 
     }
 
-    public File createFile(FilePojo filePojo) throws JsonProcessingException {
-        File fileRequest = convertUtil.convertToProtoBuf(filePojo);
-//        File responseFile = synchronousClient.getFile(fileRequest);
-        log.info("Got Response : {}", fileRequest);
-        return fileRequest;
+    public File createFile(FilePojo filePojo, String fileType) throws JsonProcessingException {
+        File file = convertUtil.convertToProtoBuf(filePojo);
+        CreateOrSaveFileRequest fileRequest = CreateOrSaveFileRequest.newBuilder().setFile(file).setFileType(fileType).build();
+        File responseFile = null;
+        try {
+            responseFile = synchronousClient.createFile(fileRequest);
+        } catch (StatusRuntimeException error) {
+            log.error("Error while creating file, reason {} ", error.getMessage());
+            throw ServiceExceptionMapper.map(error);
+        }
+        log.info("Successfully created new user file for user id: {}", responseFile.getId());
+        return responseFile;
 
     }
 

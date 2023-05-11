@@ -38,4 +38,16 @@ public class FilePojo {
     @PositiveOrZero(message = "Salary should be greater than or equal to 0")
     @XmlElement(name = "salary")
     private double salary;
+
+
+    @Override
+    public String toString() {
+        return "{" +
+                "id: " + id +
+                ", name:'" + name + '\'' +
+                ", dob: '" + dob + '\'' +
+                ", age: " + age +
+                ", salary: " + salary +
+                '}';
+    }
 }

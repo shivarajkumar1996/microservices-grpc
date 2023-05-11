@@ -5,6 +5,7 @@ import com.google.rpc.Code;
 import com.google.rpc.ErrorInfo;
 import com.microservices.grpc.ErrorDetail;
 import com.microservices.grpc.exceptions.ErrorCode;
+import com.microservices.grpc.exceptions.FileAlreadyExistsException;
 import com.microservices.grpc.exceptions.FileStorageException;
 import com.microservices.grpc.exceptions.ResourceNotFoundException;
 import io.grpc.StatusRuntimeException;
@@ -46,6 +47,40 @@ public class ExceptionHandler {
                 com.google.rpc.Status.newBuilder()
                         .setCode(Code.INTERNAL.getNumber())
                         .setMessage(ErrorCode.FILE_STORAGE_ERROR.getMessage())
+                        .addDetails(Any.pack(errorInfo))
+                        .build();
+        return StatusProto.toStatusRuntimeException(status);
+    }
+
+    @GrpcExceptionHandler(FileAlreadyExistsException.class)
+    public StatusRuntimeException handleFileAlreadyExistsException(FileAlreadyExistsException error) {
+        var errorMetaData = error.getErrorMetaData();
+        var errorInfo =
+                ErrorDetail.newBuilder()
+                        .setErrorCode(ErrorCode.FILE_ALREADY_EXISTS.getShortCode())
+                        .setMessage(error.getMessage())
+                        .putAllMetadata(errorMetaData)
+                        .build();
+        var status =
+                com.google.rpc.Status.newBuilder()
+                        .setCode(Code.ALREADY_EXISTS.getNumber())
+                        .setMessage(ErrorCode.FILE_ALREADY_EXISTS.getMessage())
+                        .addDetails(Any.pack(errorInfo))
+                        .build();
+        return StatusProto.toStatusRuntimeException(status);
+    }
+
+    @GrpcExceptionHandler(Exception.class)
+    public StatusRuntimeException handleAllUncaughtException(Exception error) {
+        var errorInfo =
+                ErrorDetail.newBuilder()
+                        .setErrorCode(ErrorCode.INTERNAL_SERVER_ERROR.getShortCode())
+                        .setMessage(error.getMessage())
+                        .build();
+        var status =
+                com.google.rpc.Status.newBuilder()
+                        .setCode(Code.INTERNAL.getNumber())
+                        .setMessage(ErrorCode.INTERNAL_SERVER_ERROR.getMessage())
                         .addDetails(Any.pack(errorInfo))
                         .build();
         return StatusProto.toStatusRuntimeException(status);

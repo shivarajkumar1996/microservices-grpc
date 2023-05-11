@@ -2,10 +2,6 @@ package com.microservices.grpc.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.protobuf.Descriptors;
-import com.microservices.grpc.File;
-import com.microservices.grpc.adapter.FileAdapter;
 import com.microservices.grpc.pojo.FilePojo;
 import com.microservices.grpc.service.FileStorageClientService;
 import lombok.AllArgsConstructor;
@@ -44,9 +40,10 @@ public class FileStorageController {
     @PostMapping(value = "/users/",
             consumes = {MediaType.APPLICATION_JSON_VALUE},
             produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<String> create(@Valid @RequestBody() FilePojo filePojo) throws JsonProcessingException {
+    public ResponseEntity<String> create(@RequestHeader(value = "fileType", defaultValue = "CSV") String fileType,  @Valid @RequestBody() FilePojo filePojo) throws JsonProcessingException {
         log.info("Json String: {}", filePojo.toString());
-        return ResponseEntity.ok(customGsonBuilder.toJson(fileStorageClientService.createFile(filePojo)));
+        fileType = fileType.equalsIgnoreCase("XML") ? fileType.toLowerCase(): "csv";
+        return ResponseEntity.ok(customGsonBuilder.toJson(fileStorageClientService.createFile(filePojo , fileType)));
     }
 
     @PutMapping(value = "/users/{id}",
