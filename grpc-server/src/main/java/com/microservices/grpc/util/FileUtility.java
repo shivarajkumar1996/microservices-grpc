@@ -21,6 +21,7 @@ import org.springframework.stereotype.Component;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import java.io.*;
 import java.nio.file.Files;
@@ -77,13 +78,13 @@ public class FileUtility {
         return true;
     }
 
-    public FilePojo create(FilePojo file, String fileType) throws IOException {
+    public FilePojo create(FilePojo file, String fileType) throws IOException, JAXBException {
 
         FilePojo responseFile = null;
         if(fileType.toLowerCase().equals(CommonConstants.CSV_FILE_EXTENSION)){
             responseFile = createCSVFile(file);
         }else{
-//            responseFile = createXMLFile();
+            responseFile = createXMLFile(file);
 
         }
         return responseFile;
@@ -93,9 +94,16 @@ public class FileUtility {
 
     public FilePojo createCSVFile(FilePojo filePojo) throws IOException {
 
-        //Validate the filePojo for dob and age and update the values if required
-
+        //TODO - Validate the filePojo for dob and age and update the values if required
         File csvOutputFile = new File(fileStorageDir.toString() + "\\" + filePojo.getId() + "." +CommonConstants.CSV_FILE_EXTENSION);
+        writeToCSV(filePojo, csvOutputFile);
+        log.info("Successfully created user file with id: {}", filePojo.getId());
+        return filePojo;
+
+    }
+
+    public void writeToCSV(FilePojo filePojo, File csvOutputFile) throws IOException {
+
         CsvMapper mapper = new CsvMapper();
         mapper.configure(JsonGenerator.Feature.IGNORE_UNKNOWN, true);
 
@@ -110,8 +118,26 @@ public class FileUtility {
         ObjectWriter writer = mapper.writerFor(FilePojo.class).with(schema);
 
         writer.writeValues(csvOutputFile).writeAll(Collections.singleton(filePojo));
+
+    }
+
+    public FilePojo createXMLFile(FilePojo filePojo) throws IOException, JAXBException {
+        //TODO - Validate the filePojo for dob and age and update the values if required
+        File xmlOutputFile = new File(fileStorageDir.toString() + "\\" + filePojo.getId() + "." +CommonConstants.XML_FILE_EXTENSION);
+        writeToXML(filePojo, xmlOutputFile);
         log.info("Successfully created user file with id: {}", filePojo.getId());
         return filePojo;
+
+    }
+
+    public void writeToXML(FilePojo filePojo, File xmlOutputFile) throws IOException, JAXBException {
+        // create JAXB context and instantiate marshaller
+        JAXBContext context = JAXBContext.newInstance(FilePojo.class);
+        Marshaller m = context.createMarshaller();
+        m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+
+        // Write to File
+        m.marshal(filePojo,xmlOutputFile);
 
     }
     public FilePojo parseFile(String id, String fileName){
@@ -125,6 +151,7 @@ public class FileUtility {
         }
         return filePojo;
     }
+
 
     public FilePojo parseCSVFile(String id, String fileName){
         FilePojo filePojo = null;

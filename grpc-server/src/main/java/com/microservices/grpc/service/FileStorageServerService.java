@@ -16,6 +16,7 @@ import lombok.extern.log4j.Log4j2;
 import net.devh.boot.grpc.server.service.GrpcService;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.util.Map;
 
@@ -76,7 +77,7 @@ public class FileStorageServerService extends FileStorageServiceGrpc.FileStorage
         try {
             filePojo = converterUtil.convertToPojo(file);
             responseFile = converterUtil.convertToProtoBuf(fileUtil.create(filePojo, fileType));
-        } catch (IOException e) {
+        } catch (IOException | JAXBException e) {
             e.printStackTrace();
             throw new RuntimeException(e);
         }
