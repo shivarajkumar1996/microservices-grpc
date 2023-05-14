@@ -47,6 +47,17 @@ public class FileUtility {
         }
     }
     public FilePojo findById(String id){
+        String fileName = getFileNameForId(id);
+        if(fileName == null){
+            return null;
+        }
+        FilePojo filePojo = parseFile(id, fileName);
+
+        return filePojo;
+
+    }
+
+    public String getFileNameForId(String id){
 
         File directory = new File(fileStorageDir.toString());
         FileFilter filter = new FileFilter(id + ".");
@@ -60,37 +71,39 @@ public class FileUtility {
         if(fileList.length > 1){
             log.warn("Multiple files detected for the user with id: {}. This is not an expected behaviour. Pick the first occurrence of the file name.", id);
         }
-        String fileName = Path.of(fileStorageDir.toString(),fileList[0] ).toAbsolutePath().toString();
-        FilePojo filePojo = parseFile(id, fileName);
-        return filePojo;
-
+        return Path.of(fileStorageDir.toString(),fileList[0] ).toAbsolutePath().toString();
     }
 
-    public boolean doesFileExist(String id){
-        File directory = new File(fileStorageDir.toString());
-        FileFilter filter = new FileFilter(id + ".");
-        String[] fileList = directory.list(filter);
-
-        if (fileList == null || fileList.length == 0) {
-            log.info("Resource not found: Id: {}", id);
-            return false;
-        }
-        return true;
-    }
-
-    public FilePojo create(FilePojo file, String fileType) throws IOException, JAXBException {
+    public FilePojo create(FilePojo filePojo, String fileType) throws IOException, JAXBException {
 
         FilePojo responseFile = null;
         if(fileType.toLowerCase().equals(CommonConstants.CSV_FILE_EXTENSION)){
-            responseFile = createCSVFile(file);
+            responseFile = createCSVFile(filePojo);
         }else{
-            responseFile = createXMLFile(file);
+            responseFile = createXMLFile(filePojo);
 
         }
         return responseFile;
     }
+    public FilePojo save(FilePojo filePojo) throws IOException, JAXBException {
 
+        FilePojo responseFile = null;
 
+        String fileName = getFileNameForId(String.valueOf(filePojo.getId()));
+        log.info("Found existing file: {}", fileName);
+       
+        if(fileName != null) {
+            String extension = FilenameUtils.getExtension(fileName);
+            if (extension.equals(CommonConstants.CSV_FILE_EXTENSION)) {
+                responseFile = createCSVFile(filePojo);
+            } else {
+                responseFile = createXMLFile(filePojo);
+            }
+        } else{
+            responseFile = createCSVFile(filePojo);
+        }
+        return responseFile;
+    }
 
     public FilePojo createCSVFile(FilePojo filePojo) throws IOException {
 

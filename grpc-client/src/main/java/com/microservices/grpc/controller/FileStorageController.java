@@ -2,6 +2,10 @@ package com.microservices.grpc.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.gson.Gson;
+import com.microservices.grpc.File;
+import com.microservices.grpc.exceptions.ErrorCode;
+import com.microservices.grpc.exceptions.InvalidArgumentException;
+import com.microservices.grpc.exceptions.ResourceNotFoundException;
 import com.microservices.grpc.pojo.FilePojo;
 import com.microservices.grpc.service.FileStorageClientService;
 import lombok.AllArgsConstructor;
@@ -10,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -40,17 +45,23 @@ public class FileStorageController {
     @PostMapping(value = "/users/",
             consumes = {MediaType.APPLICATION_JSON_VALUE},
             produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<String> create(@RequestHeader(value = "fileType", defaultValue = "CSV") String fileType,  @Valid @RequestBody() FilePojo filePojo) throws JsonProcessingException {
-        log.info("Json String: {}", filePojo.toString());
+    public FilePojo create(@RequestHeader(value = "fileType", defaultValue = "CSV") String fileType, @Valid @RequestBody() FilePojo filePojo) throws IOException {
+        log.info("Received PUT request for user with id: {}", filePojo.getId());
+        log.debug("Json String: {}", filePojo.toString());
         fileType = fileType.equalsIgnoreCase("XML") ? fileType.toLowerCase(): "csv";
-        return ResponseEntity.ok(customGsonBuilder.toJson(fileStorageClientService.createFile(filePojo , fileType)));
+        return fileStorageClientService.createFile(filePojo , fileType);
     }
 
     @PutMapping(value = "/users/{id}",
             consumes = {MediaType.APPLICATION_JSON_VALUE},
             produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<FilePojo> save(@PathVariable String id, @RequestBody() FilePojo filePojo) {
+    public FilePojo save(@PathVariable @NotNull @Positive(message = "User id must be greater than 0") int id, @Valid @RequestBody() FilePojo filePojo) throws IOException {
         log.info("Received PUT request for file with id: {}", id);
-        return ResponseEntity.ok(filePojo);
+        log.debug("Json String: {}", filePojo.toString());
+        if(id != filePojo.getId()){
+            throw new InvalidArgumentException(ErrorCode.BAD_ARGUMENT.getMessage(),  Map.of("parameter", "id", "message", "Value of variable: id must be same in both path param and request body."));
+        }
+
+        return fileStorageClientService.saveFile(filePojo);
     }
 }

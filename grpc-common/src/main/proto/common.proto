@@ -8,7 +8,7 @@ option java_package = "com.microservices.grpc";
 service FileStorageService {
   rpc getFile(RequestId) returns (File) {}
   rpc createFile(CreateOrSaveFileRequest) returns (File) {}
-  rpc updateFile(File) returns (File) {}
+  rpc updateFile(CreateOrSaveFileRequest) returns (File) {}
 }
 
 message File {

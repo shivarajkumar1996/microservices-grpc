@@ -25,10 +25,6 @@ public class FileStorageClientService {
 
     @GrpcClient("grpc-service")
     FileStorageServiceGrpc.FileStorageServiceBlockingStub synchronousClient;
-
-    @Autowired
-    Gson customGsonBuilder;
-
     @Autowired
     Utility convertUtil;
 
@@ -48,7 +44,7 @@ public class FileStorageClientService {
 
     }
 
-    public File createFile(FilePojo filePojo, String fileType) throws JsonProcessingException {
+    public FilePojo createFile(FilePojo filePojo, String fileType) throws IOException {
         File file = convertUtil.convertToProtoBuf(filePojo);
         CreateOrSaveFileRequest fileRequest = CreateOrSaveFileRequest.newBuilder().setFile(file).setFileType(fileType).build();
         File responseFile = null;
@@ -59,21 +55,23 @@ public class FileStorageClientService {
             throw ServiceExceptionMapper.map(error);
         }
         log.info("Successfully created new user file for user id: {}", responseFile.getId());
-        return responseFile;
+        return convertUtil.convertToPojo(responseFile);
 
     }
 
-    public File updateFile(FilePojo filePojo) {
+    public FilePojo saveFile(FilePojo filePojo) throws IOException {
         log.info("Processing request for id: {}", filePojo.getId());
-        File fileRequest = File.newBuilder().setAge(27)
-                .setSalary(100000)
-                .setDob("16-07-1996")
-                .setName("Shiva")
-                .setId(filePojo.getId())
-                .build();
-//        File responseFile = synchronousClient.getFile(fileRequest);
-        log.info("Got Response id: {}", fileRequest.getId());
-        return fileRequest;
+        File file = convertUtil.convertToProtoBuf(filePojo);
+        CreateOrSaveFileRequest fileRequest = CreateOrSaveFileRequest.newBuilder().setFile(file).build();
+        File responseFile = null;
+        try {
+            responseFile = synchronousClient.updateFile(fileRequest);
+        } catch (StatusRuntimeException error) {
+            log.error("Error while saving file, reason {} ", error.getMessage());
+            throw ServiceExceptionMapper.map(error);
+        }
+        log.info("Successfully saved user file for user id: {}", responseFile.getId());
+        return convertUtil.convertToPojo(responseFile);
 
     }
 

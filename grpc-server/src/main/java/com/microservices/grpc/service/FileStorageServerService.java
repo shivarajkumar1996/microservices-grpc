@@ -69,7 +69,7 @@ public class FileStorageServerService extends FileStorageServiceGrpc.FileStorage
     public void createFile(CreateOrSaveFileRequest request, StreamObserver<File> responseObserver) {
         File file = request.getFile();
         String fileType = request.getFileType();
-        if(fileUtil.doesFileExist(String.valueOf(file.getId()))){
+        if(fileUtil.getFileNameForId(String.valueOf(file.getId())) != null){
             throw new FileAlreadyExistsException(ErrorCode.FILE_ALREADY_EXISTS.getMessage(),  Map.of("id", String.valueOf(file.getId()), "message", ErrorCode.FILE_ALREADY_EXISTS.getMessage()));
         }
         FilePojo filePojo = null;
@@ -86,22 +86,19 @@ public class FileStorageServerService extends FileStorageServiceGrpc.FileStorage
     }
 
     @Override
-    public void updateFile(File file, StreamObserver<File> responseObserver) {
-        int id = file.getId();
-        String name = file.getName();
-        String dob = file.getDob();
-        double salary = file.getSalary();
-        int age = file.getAge();
+    public void updateFile(CreateOrSaveFileRequest request, StreamObserver<File> responseObserver) {
+        File file = request.getFile();
+        FilePojo filePojo = null;
+        File responseFile = null;
 
-        File responseFile = File.newBuilder()
-                .setId(id)
-                .setName(name)
-                .setDob(dob)
-                .setSalary(salary)
-                .setAge(age)
-                .build();
+        try {
+            filePojo = converterUtil.convertToPojo(file);
+            responseFile = converterUtil.convertToProtoBuf(fileUtil.save(filePojo));
 
-
+        } catch (IOException | JAXBException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
         responseObserver.onNext(responseFile);
         responseObserver.onCompleted();
     }

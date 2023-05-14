@@ -2,6 +2,7 @@ package com.microservices.grpc.handler;
 
 import com.microservices.grpc.exceptions.ErrorCode;
 import com.microservices.grpc.exceptions.ErrorResponse;
+import com.microservices.grpc.exceptions.InvalidArgumentException;
 import com.microservices.grpc.exceptions.ServiceException;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.TypeMismatchException;
@@ -73,6 +74,18 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         errorResponse.setDetails(Map.of("parameterName", ex.getName(), "parameterValue",ex.getValue().toString(), "cause", ex.getCause().toString()));
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(InvalidArgumentException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<ErrorResponse> handleInvalidArgumentException(InvalidArgumentException exception) {
+        var errorResponse = new ErrorResponse();
+        errorResponse.setErrorCode(ErrorCode.BAD_ARGUMENT);
+        errorResponse.setMessage(exception.getMessage());
+        errorResponse.setDetails(exception.getErrorMetaData());
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
+
 
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
