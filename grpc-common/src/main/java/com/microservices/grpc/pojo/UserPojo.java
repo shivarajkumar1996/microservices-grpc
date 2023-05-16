@@ -13,7 +13,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Setter
 @XmlRootElement(name = "user")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class FilePojo {
+public class UserPojo {
 
     @NotNull(message = "Id cannot be null")
     @Positive(message = "Id should be a positive number")
@@ -31,10 +31,6 @@ public class FilePojo {
     @XmlElement(name = "dob")
     private String dob;
 
-    @Positive(message = "Age should be a positive number")
-    @XmlElement(name = "age")
-    private int age;
-
     @PositiveOrZero(message = "Salary should be greater than or equal to 0")
     @XmlElement(name = "salary")
     private double salary;
@@ -46,7 +42,6 @@ public class FilePojo {
                 "id: " + id +
                 ", name:'" + name + '\'' +
                 ", dob: '" + dob + '\'' +
-                ", age: " + age +
                 ", salary: " + salary +
                 '}';
     }

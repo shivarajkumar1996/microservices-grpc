@@ -8,10 +8,10 @@ public class CommonConstants {
     public static String ID_COLUMN = "id";
     public static String NAME_COLUMN = "name";
     public static String DOB_COLUMN = "dob";
-    public static String AGE_COLUMN = "age";
     public static String SALARY_COLUMN = "salary";
 
+    public static String SUCCESSFUL_POST_MESSAGE = "User created successfully";
 
-
+    public static String SUCCESSFUL_PUT_MESSAGE = "User updated successfully";
 
 }

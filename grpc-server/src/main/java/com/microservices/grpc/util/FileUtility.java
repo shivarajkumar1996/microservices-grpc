@@ -1,7 +1,6 @@
 package com.microservices.grpc.util;
 
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
@@ -10,7 +9,8 @@ import com.microservices.grpc.constants.CommonConstants;
 import com.microservices.grpc.exceptions.FileParsingException;
 import com.microservices.grpc.exceptions.FileStorageException;
 import com.microservices.grpc.exceptions.ResourceNotFoundException;
-import com.microservices.grpc.pojo.FilePojo;
+import com.microservices.grpc.pojo.Response;
+import com.microservices.grpc.pojo.UserPojo;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -46,14 +46,14 @@ public class FileUtility {
             throw new FileStorageException("Error occurred while creating the file storage directory.",  Map.of("storage_dir", this.fileStorageDir.toAbsolutePath().toString(), "message", "Error occurred while creating the file storage directory.", "exception", ex.toString()));
         }
     }
-    public FilePojo findById(String id){
+    public UserPojo findById(String id){
         String fileName = getFileNameForId(id);
         if(fileName == null){
             return null;
         }
-        FilePojo filePojo = parseFile(id, fileName);
+        UserPojo userPojo = parseFile(id, fileName);
 
-        return filePojo;
+        return userPojo;
 
     }
 
@@ -74,48 +74,41 @@ public class FileUtility {
         return Path.of(fileStorageDir.toString(),fileList[0] ).toAbsolutePath().toString();
     }
 
-    public FilePojo create(FilePojo filePojo, String fileType) throws IOException, JAXBException {
+    public boolean create(UserPojo userPojo, String fileType) throws IOException, JAXBException {
 
-        FilePojo responseFile = null;
         if(fileType.toLowerCase().equals(CommonConstants.CSV_FILE_EXTENSION)){
-            responseFile = createCSVFile(filePojo);
+            createCSVFile(userPojo);
         }else{
-            responseFile = createXMLFile(filePojo);
-
+            createXMLFile(userPojo);
         }
-        return responseFile;
+        return true;
     }
-    public FilePojo save(FilePojo filePojo) throws IOException, JAXBException {
+    public boolean save(UserPojo userPojo) throws IOException, JAXBException {
 
-        FilePojo responseFile = null;
-
-        String fileName = getFileNameForId(String.valueOf(filePojo.getId()));
-        log.info("Found existing file: {}", fileName);
-       
+        String fileName = getFileNameForId(String.valueOf(userPojo.getId()));
         if(fileName != null) {
+            log.debug("Found existing user file: {}", fileName);
             String extension = FilenameUtils.getExtension(fileName);
             if (extension.equals(CommonConstants.CSV_FILE_EXTENSION)) {
-                responseFile = createCSVFile(filePojo);
+                createCSVFile(userPojo);
             } else {
-                responseFile = createXMLFile(filePojo);
+                createXMLFile(userPojo);
             }
         } else{
-            responseFile = createCSVFile(filePojo);
+           createCSVFile(userPojo);
         }
-        return responseFile;
+        return true;
     }
 
-    public FilePojo createCSVFile(FilePojo filePojo) throws IOException {
-
-        //TODO - Validate the filePojo for dob and age and update the values if required
-        File csvOutputFile = new File(fileStorageDir.toString() + "\\" + filePojo.getId() + "." +CommonConstants.CSV_FILE_EXTENSION);
-        writeToCSV(filePojo, csvOutputFile);
-        log.info("Successfully created user file with id: {}", filePojo.getId());
-        return filePojo;
+    public UserPojo createCSVFile(UserPojo userPojo) throws IOException {
+        File csvOutputFile = new File(fileStorageDir.toString() + "\\" + userPojo.getId() + "." +CommonConstants.CSV_FILE_EXTENSION);
+        writeToCSV(userPojo, csvOutputFile);
+        log.info("Successfully created user file with id: {}", userPojo.getId());
+        return userPojo;
 
     }
 
-    public void writeToCSV(FilePojo filePojo, File csvOutputFile) throws IOException {
+    public boolean writeToCSV(UserPojo userPojo, File csvOutputFile) throws IOException {
 
         CsvMapper mapper = new CsvMapper();
         mapper.configure(JsonGenerator.Feature.IGNORE_UNKNOWN, true);
@@ -124,61 +117,61 @@ public class FileUtility {
                 .addColumn(CommonConstants.ID_COLUMN)
                 .addColumn(CommonConstants.NAME_COLUMN)
                 .addColumn(CommonConstants.DOB_COLUMN)
-                .addColumn(CommonConstants.AGE_COLUMN)
                 .addColumn(CommonConstants.SALARY_COLUMN)
                 .build();
 
-        ObjectWriter writer = mapper.writerFor(FilePojo.class).with(schema);
+        ObjectWriter writer = mapper.writerFor(UserPojo.class).with(schema);
 
-        writer.writeValues(csvOutputFile).writeAll(Collections.singleton(filePojo));
+        writer.writeValues(csvOutputFile).writeAll(Collections.singleton(userPojo));
 
-    }
-
-    public FilePojo createXMLFile(FilePojo filePojo) throws IOException, JAXBException {
-        //TODO - Validate the filePojo for dob and age and update the values if required
-        File xmlOutputFile = new File(fileStorageDir.toString() + "\\" + filePojo.getId() + "." +CommonConstants.XML_FILE_EXTENSION);
-        writeToXML(filePojo, xmlOutputFile);
-        log.info("Successfully created user file with id: {}", filePojo.getId());
-        return filePojo;
+        return true;
 
     }
 
-    public void writeToXML(FilePojo filePojo, File xmlOutputFile) throws IOException, JAXBException {
+    public UserPojo createXMLFile(UserPojo userPojo) throws IOException, JAXBException {
+        File xmlOutputFile = new File(fileStorageDir.toString() + "\\" + userPojo.getId() + "." +CommonConstants.XML_FILE_EXTENSION);
+        writeToXML(userPojo, xmlOutputFile);
+        log.info("Successfully created user file with id: {}", userPojo.getId());
+        return userPojo;
+
+    }
+
+    public boolean writeToXML(UserPojo userPojo, File xmlOutputFile) throws IOException, JAXBException {
         // create JAXB context and instantiate marshaller
-        JAXBContext context = JAXBContext.newInstance(FilePojo.class);
+        JAXBContext context = JAXBContext.newInstance(UserPojo.class);
         Marshaller m = context.createMarshaller();
         m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
 
         // Write to File
-        m.marshal(filePojo,xmlOutputFile);
+        m.marshal(userPojo,xmlOutputFile);
+        return true;
 
     }
-    public FilePojo parseFile(String id, String fileName){
-        FilePojo filePojo = null;
+    public UserPojo parseFile(String id, String fileName){
+        UserPojo userPojo = null;
         String extension = FilenameUtils.getExtension(fileName);
         if(extension.equals(CommonConstants.CSV_FILE_EXTENSION)){
-            filePojo = parseCSVFile(id, fileName);
+            userPojo = parseCSVFile(id, fileName);
         }else{
 
-            filePojo = parseXMLFile(id, fileName);
+            userPojo = parseXMLFile(id, fileName);
         }
-        return filePojo;
+        return userPojo;
     }
 
 
-    public FilePojo parseCSVFile(String id, String fileName){
-        FilePojo filePojo = null;
+    public UserPojo parseCSVFile(String id, String fileName){
+        UserPojo userPojo = null;
         try(
                 BufferedReader br = new BufferedReader(new FileReader(fileName));
                 CSVParser parser = CSVFormat.DEFAULT.withDelimiter(',').withHeader().parse(br);
         ) {
             for(CSVRecord record : parser) {
-                filePojo = new FilePojo();
-                filePojo.setId(Integer.parseInt(record.get(CommonConstants.ID_COLUMN)));
-                filePojo.setName(record.get(CommonConstants.NAME_COLUMN));
-                filePojo.setDob(record.get(CommonConstants.DOB_COLUMN));
-                filePojo.setAge(Integer.parseInt(record.get(CommonConstants.AGE_COLUMN)));
-                filePojo.setSalary(Double.parseDouble(record.get(CommonConstants.SALARY_COLUMN)));
+                userPojo = new UserPojo();
+                userPojo.setId(Integer.parseInt(record.get(CommonConstants.ID_COLUMN)));
+                userPojo.setName(record.get(CommonConstants.NAME_COLUMN));
+                userPojo.setDob(record.get(CommonConstants.DOB_COLUMN));
+                userPojo.setSalary(Double.parseDouble(record.get(CommonConstants.SALARY_COLUMN)));
                 break;
             }
         }catch (FileNotFoundException e) {
@@ -189,21 +182,21 @@ public class FileUtility {
             e.printStackTrace();
             throw new FileParsingException("Error occurred while parsing the file.",  Map.of("file", fileName, "message", "Error occurred while parsing the file.", "exception", e.toString()));
         }
-        return filePojo;
+        return userPojo;
 
     }
 
-    public FilePojo parseXMLFile(String id, String fileName){
+    public UserPojo parseXMLFile(String id, String fileName){
         File xmlFile = new File(fileName);
-        FilePojo filePojo = null;
+        UserPojo userPojo = null;
         JAXBContext jaxbContext;
         try
         {
-            jaxbContext = JAXBContext.newInstance(FilePojo.class);
+            jaxbContext = JAXBContext.newInstance(UserPojo.class);
 
             Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
 
-            filePojo = (FilePojo) jaxbUnmarshaller.unmarshal(xmlFile);
+            userPojo = (UserPojo) jaxbUnmarshaller.unmarshal(xmlFile);
 
         }
         catch (JAXBException e)
@@ -212,7 +205,7 @@ public class FileUtility {
             throw new FileParsingException("Error occurred while parsing the file.",  Map.of("file", fileName, "message", "Error occurred while parsing the file.", "exception", e.toString()));
         }
 
-        return filePojo;
+        return userPojo;
 
 
     }

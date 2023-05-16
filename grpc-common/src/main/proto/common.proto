@@ -5,26 +5,31 @@ package com.microservices.grpc;
 option java_multiple_files = true;
 option java_package = "com.microservices.grpc";
 
-service FileStorageService {
-  rpc getFile(RequestId) returns (File) {}
-  rpc createFile(CreateOrSaveFileRequest) returns (File) {}
-  rpc updateFile(CreateOrSaveFileRequest) returns (File) {}
+service UserService {
+  rpc getUser(GetUserRequest) returns (User) {}
+  rpc createUser(CreateOrSaveUserRequest) returns (CreateOrSaveUserResponse) {}
+  rpc saveUser(CreateOrSaveUserRequest) returns (CreateOrSaveUserResponse) {}
 }
 
-message File {
+message User {
   int32 id = 1;
   string name = 2;
   string dob = 3;
   double salary = 4;
-  int32 age = 5;
 }
 
-message CreateOrSaveFileRequest {
-  File file = 1;
+message CreateOrSaveUserRequest {
+  User user = 1;
   string fileType = 2;
 }
 
-message RequestId {
+message CreateOrSaveUserResponse{
+  int32 id = 1;
+  string statusMessage = 2;
+  string path = 3;
+}
+
+message GetUserRequest {
   int32 id = 1;
 }
 

@@ -9,7 +9,7 @@ public enum ErrorCode {
 
     /** Specified resource not found */
     RESOURCE_NOT_FOUND("ResourceNotFound", "Resource not found",  HttpStatus.NOT_FOUND),
-    FILE_ALREADY_EXISTS("FileAlreadyExists", "File already exists",  HttpStatus.CONFLICT),
+    USER_ALREADY_EXISTS("UserAlreadyExists", "User already exists",  HttpStatus.CONFLICT),
     BAD_ARGUMENT("BadArgument", "Invalid arguments passed",  HttpStatus.BAD_REQUEST),
     INVALID_OPERATION("InvalidOperation", "Operation not allowed", HttpStatus.PRECONDITION_FAILED),
     FILE_STORAGE_ERROR("FileStorageException", "Error occurred while creating the file storage directory.", HttpStatus.INTERNAL_SERVER_ERROR),

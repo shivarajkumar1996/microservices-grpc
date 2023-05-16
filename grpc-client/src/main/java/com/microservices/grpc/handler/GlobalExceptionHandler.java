@@ -50,16 +50,17 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(ServiceException.class)
     public ResponseEntity<ErrorResponse> handleServiceException(ServiceException cause) {
-        log.error("Exception occured: {}", cause );
+        log.error("Exception occured: {}", cause);
         return buildServiceErrorResponse(cause);
     }
+
     @ExceptionHandler(ConstraintViolationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     ResponseEntity<ErrorResponse> handleConstraintViolationException(ConstraintViolationException e) {
         var errorResponse = new ErrorResponse();
         errorResponse.setErrorCode(ErrorCode.BAD_ARGUMENT);
         errorResponse.setMessage(e.getMessage());
-        errorResponse.setDetails(Map.of("errors",e.getConstraintViolations().stream().map((cv) -> {
+        errorResponse.setDetails(Map.of("errors", e.getConstraintViolations().stream().map((cv) -> {
             return cv == null ? "null" : cv.getPropertyPath() + ": " + cv.getMessage();
         }).collect(Collectors.joining(", "))));
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
@@ -71,7 +72,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         var errorResponse = new ErrorResponse();
         errorResponse.setErrorCode(ErrorCode.BAD_ARGUMENT);
         errorResponse.setMessage("Invalid parameter value. Parameter name: " + ex.getName());
-        errorResponse.setDetails(Map.of("parameterName", ex.getName(), "parameterValue",ex.getValue().toString(), "cause", ex.getCause().toString()));
+        errorResponse.setDetails(Map.of("parameterName", ex.getName(), "parameterValue", ex.getValue().toString(), "cause", ex.getCause().toString()));
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
@@ -84,7 +85,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         errorResponse.setDetails(exception.getErrorMetaData());
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
-
 
 
     @ExceptionHandler(Exception.class)
@@ -116,9 +116,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
 
-
     private boolean isTraceOn(WebRequest request) {
-        String [] value = request.getParameterValues(TRACE);
+        String[] value = request.getParameterValues(TRACE);
         return Objects.nonNull(value)
                 && value.length > 0
                 && value[0].contentEquals("true");
