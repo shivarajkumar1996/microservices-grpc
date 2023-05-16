@@ -4,7 +4,7 @@ import com.microservices.grpc.*;
 import com.microservices.grpc.mapper.ServiceExceptionMapper;
 import com.microservices.grpc.pojo.Response;
 import com.microservices.grpc.pojo.UserPojo;
-import com.microservices.grpc.utility.Utility;
+import com.microservices.grpc.util.CommonUtility;
 import io.grpc.StatusRuntimeException;
 import lombok.extern.log4j.Log4j2;
 import net.devh.boot.grpc.client.inject.GrpcClient;
@@ -20,7 +20,7 @@ public class UserClientService {
     @GrpcClient("grpc-service")
     UserServiceGrpc.UserServiceBlockingStub synchronousClient;
     @Autowired
-    Utility convertUtil;
+    CommonUtility convertUtil;
 
 
     public UserPojo getUser(int id) throws IOException {

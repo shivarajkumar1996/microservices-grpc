@@ -1,4 +1,4 @@
-package com.microservices.grpc.utility;
+package com.microservices.grpc.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 
 @Component
-public class Utility {
+public class CommonUtility {
 
     @Autowired
     public Gson customGsonBuilder;

@@ -8,7 +8,7 @@ import com.microservices.grpc.exceptions.FileAlreadyExistsException;
 import com.microservices.grpc.exceptions.ResourceNotFoundException;
 import com.microservices.grpc.pojo.UserPojo;
 import com.microservices.grpc.util.FileUtility;
-import com.microservices.grpc.utility.Utility;
+import com.microservices.grpc.util.CommonUtility;
 import io.grpc.stub.StreamObserver;
 import lombok.extern.log4j.Log4j2;
 import net.devh.boot.grpc.server.service.GrpcService;
@@ -29,7 +29,7 @@ public class UserServerService extends UserServiceGrpc.UserServiceImplBase {
     FileUtility fileUtil;
 
     @Autowired
-    Utility converterUtil;
+    CommonUtility converterUtil;
 
     @Override
     public void getUser(GetUserRequest request, StreamObserver<User> responseObserver) {
