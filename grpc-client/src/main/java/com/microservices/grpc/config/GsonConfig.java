@@ -7,6 +7,9 @@ import com.microservices.grpc.adapter.UserAdapter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * GsonConfig for converting Java objects to and from JSON.
+ * */
 @Configuration
 public class GsonConfig {
 

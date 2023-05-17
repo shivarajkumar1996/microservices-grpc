@@ -9,6 +9,11 @@ import io.grpc.StatusRuntimeException;
 
 import java.util.Map;
 
+/**
+ * The gRPC backend service wraps all the server side exceptions into StatusRuntimeException class
+ * and sends it to the client. This mapper is required to unwrap the StatusRuntimeException and
+ * extract the required exception details into ServiceException class
+ * */
 public class ServiceExceptionMapper {
 
     public static ServiceException map(StatusRuntimeException error) {

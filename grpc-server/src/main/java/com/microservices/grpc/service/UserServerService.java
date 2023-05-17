@@ -61,7 +61,7 @@ public class UserServerService extends UserServiceGrpc.UserServiceImplBase {
     /*  -	Assuming the request body is validated for the correctness of the input parameters, check if there is already an existing file with the given id present in either CSV/XML
         -	If present, throw error saying already exists
         -	If not, create the CSV/XML and send the success response saying created, with a proper success response as below
-            -   {id: 1, path: /grpc/users/<id>, statusMessage: Created, code: 201}
+            -   {id: 1, path: /grpc/users/<id>, statusMessage: User created successfully}
 */
     @Override
     public void createUser(CreateOrSaveUserRequest createOrSaveUserRequest, StreamObserver<CreateOrSaveUserResponse> responseObserver) {
@@ -91,7 +91,7 @@ public class UserServerService extends UserServiceGrpc.UserServiceImplBase {
        -	If present, update the existing file with new details
        -	If not, create the CSV/XML
        -    Send the success response as below
-           -   {id: 1, path: /grpc/users/<id>, statusMessage: Created, code: 200}
+           -   {id: 1, path: /grpc/users/<id>, statusMessage: User updated successfully}
 */
     @Override
     public void saveUser(CreateOrSaveUserRequest createOrSaveUserRequest, StreamObserver<CreateOrSaveUserResponse> responseObserver) {

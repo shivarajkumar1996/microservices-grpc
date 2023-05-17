@@ -9,6 +9,13 @@ import io.grpc.protobuf.StatusProto;
 import net.devh.boot.grpc.server.advice.GrpcAdvice;
 import net.devh.boot.grpc.server.advice.GrpcExceptionHandler;
 
+/**
+ * This is Grpc exception handler which intercepts all the exceptions thrown by the rpc methods
+ * and handles them at a common place. Basically, the intent here is to capture all the
+ * exception details inside the ErrorDetail object and wrap it in
+ * StatusRuntimeException. Client will unwrap the StatusRuntimeException object and interpret
+ * the error messages accordingly.
+ */
 @GrpcAdvice
 public class ExceptionHandler {
 

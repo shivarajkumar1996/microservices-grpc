@@ -25,14 +25,13 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+/**
+ * Common class to intercept and handle exceptions.
+ * */
+
 @ControllerAdvice
 @Log4j2
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
-
-    public static final String TRACE = "trace";
-
-    @Value("${server.trace:false}")
-    private boolean printStackTrace;
 
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
@@ -115,11 +114,4 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(errorResponse, errorCode.getHttpStatus());
     }
 
-
-    private boolean isTraceOn(WebRequest request) {
-        String[] value = request.getParameterValues(TRACE);
-        return Objects.nonNull(value)
-                && value.length > 0
-                && value[0].contentEquals("true");
-    }
 }

@@ -9,7 +9,6 @@ import com.microservices.grpc.constants.CommonConstants;
 import com.microservices.grpc.exceptions.FileParsingException;
 import com.microservices.grpc.exceptions.FileStorageException;
 import com.microservices.grpc.exceptions.ResourceNotFoundException;
-import com.microservices.grpc.pojo.Response;
 import com.microservices.grpc.pojo.UserPojo;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.csv.CSVFormat;
@@ -29,6 +28,11 @@ import java.nio.file.Path;
 import java.util.Collections;
 import java.util.Map;
 
+
+/**
+ * Utility class which has some basic functions to create, find or update a CSV/XML file. This
+ * class contains the core functionality
+ */
 @Log4j2
 @Component
 public class FileUtility {

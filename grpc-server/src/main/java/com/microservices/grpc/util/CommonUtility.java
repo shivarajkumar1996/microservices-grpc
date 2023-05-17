@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.microservices.grpc.CreateOrSaveUserResponse;
 import com.microservices.grpc.User;
-import com.microservices.grpc.pojo.Response;
 import com.microservices.grpc.pojo.UserPojo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -29,12 +28,5 @@ public class CommonUtility {
         return mapper.readValue(jsonString, UserPojo.class);
     }
 
-    public Response getResponse(CreateOrSaveUserResponse createOrSaveUserResponse){
-        Response response = new Response();
-        response.setId(createOrSaveUserResponse.getId());
-        response.setStatusMessage(createOrSaveUserResponse.getStatusMessage());
-        response.setPath(createOrSaveUserResponse.getPath());
-        return response;
-    }
 
 }

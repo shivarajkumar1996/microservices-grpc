@@ -9,9 +9,12 @@ import com.microservices.grpc.User;
 
 import java.io.IOException;
 
+/**
+ * Custom adapter used by gson builder to convert User object to JSON value and vice versa
+ * */
 public class UserAdapter extends TypeAdapter<User> {
     /**
-     * Override the read method to return a {@File} object from it's json representation.
+     * Override the read method to return a {@User} object from it's json representation.
      */
     @Override
     public User read(JsonReader jsonReader) throws IOException {

@@ -9,6 +9,9 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+/** This is a POJO representation of User protobuf message. You can find the exact same fields in
+ * User message defined in common.proto file
+ */
 @Getter
 @Setter
 @XmlRootElement(name = "user")
